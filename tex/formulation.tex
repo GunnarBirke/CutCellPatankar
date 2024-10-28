@@ -2,6 +2,7 @@
 
 \usepackage{amsmath}
 \usepackage{stmaryrd}
+\usepackage{tikz}
 
 %opening
 \title{}
@@ -11,6 +12,54 @@
 
 \maketitle
 
+\section{Current formulation}
+
+So far we have considered the linear transport equation
+\begin{align*}
+u_t + a u_x & = 0 \quad \forall (t, x) \in (0, T) \times (a, b) \\
+u(0, x)  & = u_0(x) \quad \forall x \in (a, b)\\
+u(t, a) & = u(t, b) \quad \forall t \in (0, T)
+\end{align*}
+with $a > 0$, that means we have a wave moving to the right.
+
+Our spatial domain discretizations starts off with $N+1$ equidistant grid points $(x_{i - \frac{1}{2}})_{(1 \le i \le N + 1)}$ on the domain $(a, b)$ forming a grid with $N$ elements  $E_i = (x_{i - \frac{1}{2}}, x_{i + \frac{1}{2}})$ of size $|E_i| = h_i = x_{i + \frac{i}{2}} - x_{i - \frac{1}{2}}$.
+
+Let for some $1 \le k \le N$ a point $x_{cut} \in E_k$  be given, seperating $E_k$ into two cut cells $E_{cut, 1} = (x_{k - \frac{1}{2}}, x_{cut})$ and $E_{cut, 2} = (x_{cut}, x_{k + \frac{1}{2}})$.  This yields the cut cell grid
+\[
+\mathcal{M}_h = \{ E_i : i \neq k\} \cup \{ E_{cut, 1}, E_{cut, 2} \}.
+\]
+We will assume that $E_{cut}^1$ is the small cell with $|E_i| \ll h$, requiring additional handling if a timestep size depending on $h$ is chosen.
+
+We define our discrete function space as
+\[
+V_h = \{ v_h \in L^2((a, b)) : (v_h)_{|E} \in \mathcal{P}^0(E), \; E \in \mathcal{M}_h \}
+\]
+that means our discrete functions are piecewise constant on the cut cell grid.
+
+For our semi-discretization in space we define
+\begin{align*}
+g_0(u_h) & = \frac{1}{4} ( u_1 + 2 u_0 + u_N -f(u_1) + f(u_N)) \\
+& \vdots \\
+g_{k-1} (u_h) & = \frac{1}{4} ( u_{cut, 1} + 2 u_{k-1} + u_{k-2} -f(u_{cut, 1} ) + f(u_{k-2} )) \\
+g_{cut, 1} (u_h) & = \frac{1}{4} ( u_{cut, 2}  + 2 u_{cut, 1}  + u_{k-1} -f(u_{cut, 2}) + f(u_{k-1})) \\
+g_{cut, 2}(u_h)  & = \frac{1}{4} ( u_{k+1} + 2 u_{cut, 2}  + u_{cut, 1}  -f(u_{k+1}) + f(u_{cut, 1})) \\
+g_{k+1}(u_h)  & = \frac{1}{4} ( u_{k+2} + 2 u_{k+1} + u_{cut, 2} -f(u_{k+2}) + f(u_{cut, 2})) \\
+& \vdots\\
+g_N(u_h)  & = \frac{1}{4} ( u_0 + 2 u_N + u_{N-1} -f(u_0) + f(u_{N-1}))
+\end{align*}
+
+Let $\nu_i = \frac{2 \Delta t}{|E_i|}$ and $\beta_i = \frac{|E_i|}{h}$. The fully discrete scheme is given by
+
+\begin{align*}
+	u_0^{n+1}& = \frac{(1 - \beta_0 \nu_0) u_0^n + \nu_0 g_0(u_h^n)}{(1 - \beta_0 \nu_0) + \nu_0}\\
+	& \vdots \\
+	u_{k-1}^{n+1} & = \frac{(1 - \beta_{k-1} \nu_{k-1}) u_{k-1}^n + \nu_{k-1} g_{k-1}(u_h^n)}{(1 - \beta_{k-1} \nu_{k-1}) + \nu_{k-1}}\\
+	u_{cut, 1}^{n+1} & = \frac{(1 - \beta_{cut, 1} \nu_{cut, 1}) u_{cut, 1}^n + \nu_{cut, 1} g_{cut, 1}(u_h^n)}{(1 - \beta_{cut, 1} \nu_{cut, 1}) + \nu_{cut, 1}}\\
+	u_{cut, 2}^{n+1}  & = \frac{(1 - \beta_{cut, 2} \nu_{cut, 2}) u_{cut, 2}^n + (1 - \beta_{cut, 1}) \nu_{cut, 1} g_{cut, 1} (u_h^n) + \beta_{cut, 1} \nu_{cut, 2} g_{cut, 2}(u_h^n)}{1 - \beta_{cut, 2} \nu_{cut, 2} + (1 - \beta_{cut, 1}) \nu_{cut, 1} + \beta_{cut, 1} \nu_{cut, 2}}\\
+	u_{k+1}^{n+1}  & = \frac{(1 - \beta_{k+1} \nu_{k+1}) u_{k+1}^n + \nu_{k+1} g_{k+1}(u_h^n)}{(1 - \beta_{k+1} \nu_{k+1}) + \nu_{k+1}}\\
+	& \vdots\\
+	u_N^{n+1} & = \frac{(1 - \beta_N \nu_N) u_{n+1}^n + \nu_N g_N(u_h^n)}{(1 - \beta_N \nu_N) + \nu_N}
+\end{align*}
 
 
 \end{document}
