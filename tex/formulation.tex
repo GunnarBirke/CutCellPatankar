@@ -61,5 +61,28 @@ Let $\nu_i = \frac{2 \Delta t}{|E_i|}$ and $\beta_i = \frac{|E_i|}{h}$. The full
 	u_N^{n+1} & = \frac{(1 - \beta_N \nu_N) u_{n+1}^n + \nu_N g_N(u_h^n)}{(1 - \beta_N \nu_N) + \nu_N}
 \end{align*}
 
+\section*{Extend domain of dependence}
+
+The problem that we are currently facing is that we do not properly reconstruct the domain of dependence of elements in the local neighborhood of a small cell. Preferable we would do this on the level of time discretization, similarly to the formulation above, but it's not yet clear how to achieve this.
+
+Extending the time discretization can probably be understood as solving a perturbed ODE anyways (formulate this precisely!), so we might as well work on the level of the space discretization, at least to get some insight. One crucial ingredient for boundedness preservation is the implication
+\begin{displaymath}
+	u \in G \implies g(u) \in G
+\end{displaymath}
+or equivalently
+\begin{displaymath}
+	u _i\in [\alpha, \beta] \forall i \implies g_i(u) \in [\alpha, \beta] \forall i
+\end{displaymath}
+Here $g_i(u)$ essentially describes the changes of the state $u_i$ due to incoming and outgoing fluxes.
+
+In the formulation above we are essentially considering something like
+\begin{displaymath}
+(1-\kappa)g_i(u) + \kappa g_{i+1}(u) \in [\alpha, \beta]
+\end{displaymath}
+for $\kappa \in [0, 1]$, up to Courant numbers. The set relation holds since this is a convex combination. However, this does not seem to use every assumption we have available. In fact, we should have something like
+\begin{displaymath}
+	g_i(u) + g_{i+1}(u) \in [\alpha, \beta]
+\end{displaymath}
+due to consistency of the underlying numerical fluxes (check this!). The term $g_i(u) + g_{i+1}(u)$ should desribe  the changes of the combined (discontinuous) state $u_i \oplus u_{i+1}$ in an extended volume. Taking a portion of this, controlled by a parameter $\eta \in [0, 1]$ and applying it via the Patankar scheme to neighboring elements of a small cell should give a reconstruction of the actual domain of dependence.
 
 \end{document}
