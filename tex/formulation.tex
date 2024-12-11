@@ -85,4 +85,7 @@ for $\kappa \in [0, 1]$, up to Courant numbers. The set relation holds since thi
 \end{displaymath}
 due to consistency of the underlying numerical fluxes (check this!). The term $g_i(u) + g_{i+1}(u)$ should desribe  the changes of the combined (discontinuous) state $u_i \oplus u_{i+1}$ in an extended volume. Taking a portion of this, controlled by a parameter $\eta \in [0, 1]$ and applying it via the Patankar scheme to neighboring elements of a small cell should give a reconstruction of the actual domain of dependence.
 
+\section{Note (Meeting 11.10.2024)}
+Adapting $g_i(u)$ to track the fluxes and restoring the domain of dependence respectively will result in a scheme euqal (or similar?) to DoD. 
+Thereofore, our approach to expand the method to equations with arbirtatry flux directions (for the sake of restoring the domain of dependence) should just be to adjust the appearance of $g_i$'s, like a convex combination, but not adapting the $g_i$'s itself.
 \end{document}
