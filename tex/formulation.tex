@@ -89,3 +89,15 @@ due to consistency of the underlying numerical fluxes (check this!). The term $g
 Adapting $g_i(u)$ to track the fluxes and restoring the domain of dependence respectively will result in a scheme euqal (or similar?) to DoD. 
 Thereofore, our approach to expand the method to equations with arbirtatry flux directions (for the sake of restoring the domain of dependence) should just be to adjust the appearance of $g_i$'s, like a convex combination, but not adapting the $g_i$'s itself.
 \end{document}
+\newpage
+\secction{Project report 07-2025}
+The aim was to construct a simple method that is boundary preserving(BP) and at the same time serves as cut-cell stabilization, i.e., in the presence of cut cells it provides a stable method under a time step condition that is directed at the large cells.
+The detailed approach was to use a boundary preserving semi-discretization (e.g. monolithic convex limiting), that can be written in the form 
+$$ m_i \frac{\text{d}u_i}{\text{d}t}=a_i(u)\left(g_i(u)-u_i\right)$$ where $a_i>0$ (and $m_i$>0 is the mass/cell size). The (BP) condition is given by $$u_j\in \mathcal{G} \quad \forall j \in \mathcal{N}_i \Rightarrow g_i(u)\in \mathcal{G}$$ for any invariant domain $\mathcal{G}$. The crucial point is the time-discretization, which is given by a convex-combination (CC) of an SSP-RK step and a Patankar-like approximation. Both methods are BP by itself and such is the CC. The advantage of the CC is that using just an explicit SSP RK step would lead to a restrictive time-step condition for the update, depending on the size of the smallest cut cell. Meanwhile, just a Patankar-like apporach would not be mass conserving. So the strategy is to find the largest $\beta_i \in [0,1]$, such that
+$$u_i^{\text{lim}} = \frac{(1-\beta_i(u)\mu_i(u))u_i+\mu_i(u)g_i(u)}{1+(1-\beta_i(u))\mu_i(u)} \in \mathcal{G},$$ where $\mu_i(u) = a_i(u)\Delta t/m_i$. 
+
+We implemented  described method for a 1D linear advection problem and obtained stability. We encountered the problem, that we do not properly reconstruct the domain of dependence of elements in the local neighborhood of a small cell. The implcit treatment extends the actual domain of dependence to the whole domain, but it seems like this is not enough to preserve the information in the correct cell. To solve this problem, we added another CC that replaces $g_i(u)$ by the term $$(1-\kappa)g_i(u)+\kappa g_{i+1}(u)\in \mathcal{G}. $$
+
+First tests showed that this solved the problem.
+This approach is very similar to the DoD stabilization, if we include the CC above at the semidiscretization. 
+From hereon, we need to pose the question, if it makes sense to follow this idea further or, to approach that topic differentl by applying the DoD stabilization as a base scheme for stabilizing cells and add on top of that a CC of Patankar and SSP RK to gain a BP scheme. This approach may also relax the strict CFL condition, occuring from the extrapolation operator of the DoD stabilization. 
