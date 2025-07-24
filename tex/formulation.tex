@@ -92,16 +92,18 @@ Adapting $g_i(u)$ to track the fluxes and restoring the domain of dependence res
 Thereofore, our approach to expand the method to equations with arbirtatry flux directions (for the sake of restoring the domain of dependence) should just be to adjust the appearance of $g_i$'s, like a convex combination, but not adapting the $g_i$'s itself.
 
 \newpage
+\thispagestyle{empty}
+\section*{A Simple Bound-Preserving Treatment of
+Cut Cells:\\
+Project report 07-2025\\ (Gunnar Birke, Louis Petri, Insa-Marie Schneider)}
+The aim is to construct a numerical scheme on cut cell meshes that is bound-preserving in the presence of arbitrarily small cells even with a time step size that is directed at the large background cells in the mesh.
 
-\section{Project report 07-2025}
-The aim is to construct a numerical scheme on cut cell meshes that is boundary preserving in the presence of arbitrarily small cells even with a time step size that is directed at the large background cells in the mesh.
-
-The starting point is a boundary preserving semi-discretization (e.g. monolithic convex limiting), that can be written in the form
+The starting point is a bound-preserving semi-discretization (e.g. monolithic convex limiting), that can be written in the form
 \begin{equation}
 	\label{eq: semidiscretization}
 m_i \frac{\text{d}u_i}{\text{d}t}=a_i(u)\left(g_i(u)-u_i\right)
 \end{equation}
-where $a_i>0$ (and $m_i>0$ is the mass/cell size). The (BP) condition is given by $$u_j\in \mathcal{G} \quad \forall j \in \mathcal{N}_i \Rightarrow g_i(u)\in \mathcal{G}$$ for any invariant domain $\mathcal{G}$. Applying an explicit SSP-RK scheme will only lead to a BP scheme under a severe time step restriction. Instead we blend a SSP-RK with a Patankar-like time stepping scheme (which is unconditionally BP) yielding
+where $a_i>0$ (and $m_i>0$ is the mass/cell size). The (BP) condition is given by $$u_j\in \mathcal{G} \quad \forall j \in \mathcal{N}_i \Rightarrow g_i(u)\in \mathcal{G}$$ for any invariant domain $\mathcal{G}$. Applying an explicit SSP-RK scheme will only lead to a BP scheme under a severe time step restriction. Instead, we blend a SSP-RK with a Patankar-like time stepping scheme (which is unconditionally BP) yielding
 $$u_i^{\text{lim}} = \frac{(1-\beta_i(u)\mu_i(u))u_i+\mu_i(u)g_i(u)}{1+(1-\beta_i(u))\mu_i(u)} \in \mathcal{G},$$
 where $\mu_i(u) = a_i(u)\Delta t/m_i$  and $\beta_i = \frac{m_i}{h}$, i. e. the cell volume fraction.
 
@@ -109,8 +111,8 @@ Numerical results indicate that while this method is indeed stable for large tim
 
 To fix this we consider
 $$u_i^{\text{lim}} = \frac{(1-\beta_i(u)\mu_i(u))u_i+ (1 - \beta_{i-1})\mu_{i-1}(u)g_{i-1}(u) +  \beta_{i-1}\mu_i(u)g_i(u)}{1-\beta_i(u)\mu_i(u) + (1 - \beta_{i-1}) \mu_{i-1} + \beta_{i-1} \mu_i} \in \mathcal{G},$$
-i. e. we introduce another convex combination such that the numerical domain of dependence is extended in the presence of small cells. The extension is towards the left and indeed for right propagating waves, the accuracy problem is fixed. For left moving waves however, it fails completely. In this scenario we need an extension in the opposite direction and it is not clear yet, how to select between different wave directions based solely on terms appearing in the production-destruction formulation \eqref{eq: semidiscretization}, i. e. without considering actual flux directions.
+i. e. we introduce another convex combination such that the numerical domain of dependence is extended in the presence of small cells. The extension is towards the left and indeed for right propagating waves, the accuracy problem is fixed. For left moving waves however, it is necessary to extend this to the opposite direction and it is not clear yet, how to select between different wave directions based solely on terms appearing in the production-destruction formulation \eqref{eq: semidiscretization}, i. e. without considering actual flux directions.
 
-One way to fix this would be to use a space discretization that already provides an extended domain of dependence. Even then it could still be benefitial to consider a Patankar-like scheme for the time discretization, to further lift the restriction on the time step size.
+One way to fix this would be to use a space discretization that already provides an extended domain of dependence. Even then it could still be beneficial to consider a Patankar-like scheme for the time discretization, to further lift the restriction on the time step size.
 
 \end{document}
